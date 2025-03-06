@@ -151,7 +151,7 @@ export default function About() {
                 </div>
                 <div className="flex items-center space-x-4">
                   <Globe className="w-6 h-6 text-indigo-600" />
-                  <span>www.edutech.com</span>
+                  <span>fore-fight-era.vercel.app</span>
                 </div>
               </div>
               
