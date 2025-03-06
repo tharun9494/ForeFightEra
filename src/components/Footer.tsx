@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Linkedin } from 'lucide-react';
-
+import logo from '../images/logo.png'
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -125,7 +125,10 @@ export default function Footer() {
                 <span className="text-gray-400">forefightera@gmail.com</span>
               </li>
             </ul>
+            <br></br>
+            <img src={logo} alt='logo' className="h-25 w-20"/>
           </div>
+         
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8">
