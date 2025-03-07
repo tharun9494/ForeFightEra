@@ -201,7 +201,7 @@ export default function Programs() {
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-2">{course.title}</h3>
-                  <p className="text-gray-600 mb-4">{course.description}</p>
+                  <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
                   <div className="flex items-center justify-between">
                     
                     <div className="flex space-x-2">
