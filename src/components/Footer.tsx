@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold">EduTech</h3>
+            <h3 className="text-2xl font-bold">ForeFight Era</h3>
             <p className="text-gray-400">
             ForeFight Era, we help businesses and startups establish a strong online presence through custom website development, responsive web design, e-commerce solutions, and branding services. Our mission is to empower companies with affordable, high-quality digital solutions.
 

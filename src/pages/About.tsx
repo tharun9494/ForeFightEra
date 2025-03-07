@@ -88,9 +88,7 @@ export default function About() {
           <div className="text-center mb-16">
             <h1 className="text-4xl font-bold mb-6">Our Mission</h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              To empower individuals worldwide with quality education through innovative
-              online learning experiences, making education accessible to everyone,
-              anywhere, at any time.
+            At ForeFight Era, our mission is to empower businesses and startups by providing affordable, high-quality digital solutions that enhance their online presence. We strive to bridge the gap between innovation and accessibility, ensuring that every business—regardless of size—has the opportunity to thrive in the digital world.
             </p>
           </div>
 
