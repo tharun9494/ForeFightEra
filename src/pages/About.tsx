@@ -34,7 +34,7 @@ export default function About() {
   const team = [
     {
       name: 'Ontimitta Tharun',
-      role: 'Founder & CEO',
+      role: 'Director',
       image: Tharun
     },
     {
