@@ -90,9 +90,7 @@ export default function CourseDetail() {
                   <div className="prose max-w-none">
                     <p className="text-gray-600 mb-6">{course.aboutCourse || course.description}</p>
                     <h3 className="text-xl font-semibold mb-3">Prerequisites</h3>
-                    <p className="text-gray-600 mb-6">{course.prerequisites}</p>
-                    <h3 className="text-xl font-semibold mb-3">Learning Objectives</h3>
-                    <p className="text-gray-600">{course.learningObjectives}</p>
+                    
                   </div>
                 </div>
               )}
