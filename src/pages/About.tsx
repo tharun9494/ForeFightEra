@@ -6,6 +6,7 @@ import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useState } from 'react';
 import Tharun from '../images/Tharun.jpeg'
 import karthik from '../images/karthik1.jpeg'
+import Prem from "../images/Prem.png"
 
 
 
@@ -43,8 +44,8 @@ export default function About() {
     },
     {
       name: 'Kothala Prem Sai',
-      role: 'Lead Instructor',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80'
+      role: 'Director',
+      image: Prem
     }
   ];  
 
