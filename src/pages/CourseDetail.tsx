@@ -89,8 +89,11 @@ export default function CourseDetail() {
                   <h2 className="text-2xl font-bold mb-4">About This Course</h2>
                   <div className="prose max-w-none">
                     <p className="text-gray-600 mb-6">{course.aboutCourse || course.description}</p>
-                    <h3 className="text-xl font-semibold mb-3">Prerequisites</h3>
-                    
+                    <h3 className="text-sl text-blue-900 font-semibold mb-3">
+                      <a href={course.websiteLink} target="_blank" rel="noopener noreferrer">
+                        {course.websiteLink}
+                      </a>
+                    </h3>
                   </div>
                 </div>
               )}
