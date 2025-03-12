@@ -10,6 +10,7 @@ import CourseDetail from './pages/CourseDetail';
 import BlogDetail from './pages/BlogDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';
 import { useEffect, useState } from 'react';
 import { auth, db } from './lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -50,6 +51,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/profile" element={<Profile />} />
             {isAdmin && <Route path="/admin" element={<AdminDashboard />} />}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
         <Footer />
