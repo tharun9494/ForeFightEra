@@ -7,16 +7,41 @@ import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import toast from 'react-hot-toast';
 
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  category: string;
+  students: number;
+  rating: number | string;
+}
+
+interface VideoData {
+  url: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+}
+
 export default function Programs() {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoData | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+        setLoading(true);
         const querySnapshot = await getDocs(collection(db, 'programs'));
+        
+        if (querySnapshot.empty) {
+          console.log('No programs found');
+          setCourses([]);
+          return;
+        }
+
         const enrollmentsSnapshot = await getDocs(collection(db, 'enrollments'));
         const ratingsSnapshot = await getDocs(collection(db, 'ratings'));
 
@@ -40,29 +65,42 @@ export default function Programs() {
             ...doc.data(),
             students: studentCount,
             rating: averageRating
-          };
+          } as Course;
         });
         
         setCourses(coursesData);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching courses:', error);
-        toast.error('Failed to load courses');
+        if (error.code === 'permission-denied') {
+          toast.error('You do not have permission to view courses. Please contact support.');
+        } else {
+          toast.error('Failed to load courses. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
     };
 
+    // Check if user is authenticated before fetching
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        fetchCourses();
+      } else {
+        // If not authenticated, still try to fetch public courses
     fetchCourses();
+      }
+    });
+
+    // Cleanup subscription
+    return () => unsubscribe();
   }, []);
 
-  const fetchVideoUrl = async (courseId) => {
-    // Fetch video URL from Firebase Storage or Firestore
-    // Assuming you have a function to get the video URL
-    const videoUrl = await getVideoUrlFromStorage(courseId); // Implement this function
-    return videoUrl;
+  const fetchVideoUrl = async (courseId: string): Promise<string> => {
+    // Implement your video URL fetching logic here
+    return '';
   };
 
-  const handleEnroll = async (courseId) => {
+  const handleEnroll = async (courseId: string) => {
     try {
       const user = auth.currentUser;
       if (!user) {
@@ -92,7 +130,12 @@ export default function Programs() {
 
       // Fetch video URL after successful enrollment
       const videoUrl = await fetchVideoUrl(courseId);
-      setSelectedVideo({ url: videoUrl, title: 'Video Title', description: 'Video Description', thumbnail: 'Thumbnail URL' }); // Update with actual data
+      setSelectedVideo({
+        url: videoUrl,
+        title: 'Video Title',
+        description: 'Video Description',
+        thumbnail: 'Thumbnail URL'
+      });
 
       toast.success('Successfully enrolled in the course!');
       navigate('/profile');
@@ -102,7 +145,7 @@ export default function Programs() {
     }
   };
 
-  const handleRating = async (courseId, rating) => {
+  const handleRating = async (courseId: string, rating: number) => {
     try {
       const user = auth.currentUser;
       if (!user) {
@@ -139,7 +182,7 @@ export default function Programs() {
     }
   };
 
-  const VideoPreviewModal = ({ video, onClose }) => (
+  const VideoPreviewModal = ({ video, onClose }: { video: VideoData; onClose: () => void }) => (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl max-w-3xl w-full p-6">
         <div className="flex justify-between items-center mb-4">
@@ -217,7 +260,7 @@ export default function Programs() {
                         onClick={() => auth.currentUser && handleRating(course.id, 5)}
                       />
                       <span className="text-sm">
-                        {course.rating > 0 ? course.rating : 'No ratings'}
+                        {typeof course.rating === 'number' && course.rating > 0 ? course.rating : 'No ratings'}
                       </span>
                     </div>
 

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Mail, MapPin, Phone, Globe, BookOpen, Users, Award } from 'lucide-react';
+import { Mail, MapPin, Phone, Globe, BookOpen, Users, Award, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
@@ -17,12 +17,12 @@ export default function About() {
     {
       icon: BookOpen,
       label: 'Projects',
-      value: '10+'
+      value: '50+'
     },
     {
       icon: Users,
       label: 'Clients',
-      value: '10+'
+      value: '50+'
     },
     {
       icon: Award,
@@ -34,17 +34,13 @@ export default function About() {
   const team = [
     {
       name: 'Ontimitta Tharun',
-      role: 'Director',
+      role: 'Founder & CEO',
       image: Tharun
     },
-    {
-      name: 'Palli Karthik',
-      role: 'Director',
-      image: karthik
-    },
+   
     {
       name: 'Kothala Prem Sai',
-      role: 'Director',
+      role: 'Co-Founder & CTO',
       image: Prem
     }
   ];  
@@ -110,24 +106,28 @@ export default function About() {
           {/* Team Section */}
           <div className="mb-16">
             <h2 className="text-3xl font-bold mb-8 text-center">Our Team</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {team.map((member) => (
-                <motion.div
-                  key={member.name}
-                  whileHover={{ y: -5 }}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden"
-                >
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="p-6 text-center">
-                    <h3 className="text-xl font-bold mb-2">{member.name}</h3>
-                    <p className="text-gray-600">{member.role}</p>
-                  </div>
-                </motion.div>
-              ))}
+            <div className="flex justify-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
+                {team.map((member) => (
+                  <motion.div
+                    key={member.name}
+                    whileHover={{ y: -5 }}
+                    className="bg-white rounded-xl shadow-lg overflow-hidden"
+                  >
+                    <div className="w-full h-80 overflow-hidden">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-6 text-center">
+                      <h3 className="text-xl font-bold mb-2">{member.name}</h3>
+                      <p className="text-gray-600">{member.role}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -150,7 +150,7 @@ export default function About() {
                 </div>
                 <div className="flex items-center space-x-4">
                   <Globe className="w-6 h-6 text-indigo-600" />
-                  <span>fore-fight-era.vercel.app</span>
+                  <span>www.forefightera.in</span>
                 </div>
               </div>
               
@@ -178,6 +178,27 @@ export default function About() {
                 />
                 <Button type="submit" className="w-full">Send Message</Button>
               </form>
+            </div>
+          </div>
+
+          <div className="text-center space-y-6">
+            <div className="bg-yellow-50 rounded-xl p-6 max-w-2xl mx-auto">
+              <h3 className="text-xl font-bold text-yellow-600 mb-4">Connect With Us</h3>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="https://tharun-portfo.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                  View Portfolio
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+                <a href="https://wa.me/9189191403905" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3 border border-yellow-500 text-base font-medium rounded-md text-yellow-600 bg-white hover:bg-yellow-50">
+                  Contact on WhatsApp
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </div>
+            </div>
+            <div className="text-gray-600">
+              <p>📞 Contact Us: +91 89194 03905</p>
+              <p>📧 forefightera@gmail.com</p>
+              <p className="mt-4 italic">👉 Visit our portfolio to see more of our work!</p>
             </div>
           </div>
         </motion.div>

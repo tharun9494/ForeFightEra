@@ -44,7 +44,8 @@ export default function AuthModal({ isOpen, onClose, defaultMode }: AuthModalPro
         );
 
         // Create user document in Firestore
-        await setDoc(doc(db, 'users', userCredential.user.uid), {
+        const userDocRef = doc(db, 'users', userCredential.user.uid);
+        await setDoc(userDocRef, {
           fullName: formData.fullName,
           email: formData.email,
           phone: formData.phone,
@@ -62,12 +63,26 @@ export default function AuthModal({ isOpen, onClose, defaultMode }: AuthModalPro
           navigate('/');
         }
       } else {
-        const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+        // Sign in user
+        const userCredential = await signInWithEmailAndPassword(
+          auth, 
+          formData.email, 
+          formData.password
+        );
+
+        // Get user document
         const userDocRef = doc(db, 'users', userCredential.user.uid);
         const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+          toast.error('User profile not found. Please contact support.');
+          return;
+        }
+
         const userData = userDoc.data();
 
-        if (userData && userData.role === 'faculty') {
+        // Role-based redirection
+        if (userData.role === 'faculty') {
           navigate('/admin');
         } else {
           navigate('/');
@@ -85,7 +100,18 @@ export default function AuthModal({ isOpen, onClose, defaultMode }: AuthModalPro
         role: 'student'
       });
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('Authentication error:', error);
+      if (error.code === 'auth/user-not-found') {
+        toast.error('No account found with this email');
+      } else if (error.code === 'auth/wrong-password') {
+        toast.error('Incorrect password');
+      } else if (error.code === 'auth/email-already-in-use') {
+        toast.error('Email is already in use');
+      } else if (error.code === 'permission-denied') {
+        toast.error('You do not have permission to access this resource');
+      } else {
+        toast.error(error.message || 'An error occurred during authentication');
+      }
     }
   };
 
