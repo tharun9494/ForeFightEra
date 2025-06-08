@@ -38,8 +38,11 @@ export default function AdminDashboard() {
     syllabus: [{ week: '', topic: '', content: '' }],
     assignments: [{ title: '', description: '', dueDate: '' }],
     resources: [{ title: '', url: '', type: '' }],
-    websiteLink: ''
+    websiteLink: '',
+    imageUrl: ''
   });
+  const [editingProgram, setEditingProgram] = useState(null);
+  const [showEditProgram, setShowEditProgram] = useState(false);
 
   const navigate = useNavigate();
 
@@ -149,6 +152,7 @@ export default function AdminDashboard() {
         createdAt: new Date().toISOString(),
         createdBy: auth.currentUser?.email
       });
+      
       toast.success('Program added successfully!');
       setShowAddProgram(false);
       setNewProgram({
@@ -164,11 +168,50 @@ export default function AdminDashboard() {
         syllabus: [{ week: '', topic: '', content: '' }],
         assignments: [{ title: '', description: '', dueDate: '' }],
         resources: [{ title: '', url: '', type: '' }],
-        websiteLink: ''
+        websiteLink: '',
+        imageUrl: ''
       });
       fetchPrograms();
     } catch (error) {
+      console.error('Error adding program:', error);
       toast.error('Failed to add program');
+    }
+  };
+
+  const handleEditProgram = async (e) => {
+    e.preventDefault();
+    try {
+      const programRef = doc(db, 'programs', editingProgram.id);
+      await updateDoc(programRef, {
+        ...editingProgram,
+        updatedAt: new Date().toISOString(),
+        updatedBy: auth.currentUser?.email
+      });
+      
+      toast.success('Program updated successfully!');
+      setShowEditProgram(false);
+      setEditingProgram(null);
+      fetchPrograms();
+    } catch (error) {
+      console.error('Error updating program:', error);
+      toast.error('Failed to update program');
+    }
+  };
+
+  const startEditProgram = (program) => {
+    setEditingProgram(program);
+    setShowEditProgram(true);
+  };
+
+  // Add image upload handler
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewProgram({ ...newProgram, imageUrl: reader.result });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -443,73 +486,151 @@ export default function AdminDashboard() {
                   </Button>
                 </div>
 
-                {showAddProgram && (
+                {(showAddProgram || showEditProgram) && (
                   <div className="mb-6">
-                    <form onSubmit={handleAddProgram} className="space-y-4">
+                    <form onSubmit={showEditProgram ? handleEditProgram : handleAddProgram} className="space-y-4">
                       <input
                         type="text"
                         placeholder="Program Title"
                         className="w-full p-2 border rounded"
-                        value={newProgram.title}
-                        onChange={(e) => setNewProgram({ ...newProgram, title: e.target.value })}
+                        value={showEditProgram ? editingProgram.title : newProgram.title}
+                        onChange={(e) => showEditProgram 
+                          ? setEditingProgram({ ...editingProgram, title: e.target.value })
+                          : setNewProgram({ ...newProgram, title: e.target.value })}
                         required
                       />
                       <textarea
                         placeholder="Program Description"
                         className="w-full p-2 border rounded h-32"
-                        value={newProgram.description}
-                        onChange={(e) => setNewProgram({ ...newProgram, description: e.target.value })}
+                        value={showEditProgram ? editingProgram.description : newProgram.description}
+                        onChange={(e) => showEditProgram
+                          ? setEditingProgram({ ...editingProgram, description: e.target.value })
+                          : setNewProgram({ ...newProgram, description: e.target.value })}
                         required
                       />
                       <input
                         type="text"
                         placeholder="Category"
                         className="w-full p-2 border rounded"
-                        value={newProgram.category}
-                        onChange={(e) => setNewProgram({ ...newProgram, category: e.target.value })}
+                        value={showEditProgram ? editingProgram.category : newProgram.category}
+                        onChange={(e) => showEditProgram
+                          ? setEditingProgram({ ...editingProgram, category: e.target.value })
+                          : setNewProgram({ ...newProgram, category: e.target.value })}
                         required
                       />
                       <input
                         type="text"
                         placeholder="Website Link"
                         className="w-full p-2 border rounded"
-                        value={newProgram.websiteLink}
-                        onChange={(e) => setNewProgram({ ...newProgram, websiteLink: e.target.value })}
+                        value={showEditProgram ? editingProgram.websiteLink : newProgram.websiteLink}
+                        onChange={(e) => showEditProgram
+                          ? setEditingProgram({ ...editingProgram, websiteLink: e.target.value })
+                          : setNewProgram({ ...newProgram, websiteLink: e.target.value })}
                         required
                       />
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Program Image URL
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter image URL"
+                          className="w-full p-2 border rounded"
+                          value={showEditProgram ? editingProgram.imageUrl : newProgram.imageUrl}
+                          onChange={(e) => showEditProgram
+                            ? setEditingProgram({ ...editingProgram, imageUrl: e.target.value })
+                            : setNewProgram({ ...newProgram, imageUrl: e.target.value })}
+                        />
+                        {(showEditProgram ? editingProgram.imageUrl : newProgram.imageUrl) && (
+                          <div className="mt-2">
+                            <img
+                              src={showEditProgram ? editingProgram.imageUrl : newProgram.imageUrl}
+                              alt="Preview"
+                              className="w-full h-48 object-cover rounded-lg"
+                              onError={(e) => {
+                                e.currentTarget.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085";
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
                       <div className="flex justify-end space-x-4">
                         <Button
                           type="button"
                           variant="ghost"
-                          onClick={() => setShowAddProgram(false)}
+                          onClick={() => {
+                            if (showEditProgram) {
+                              setShowEditProgram(false);
+                              setEditingProgram(null);
+                            } else {
+                              setShowAddProgram(false);
+                            }
+                          }}
                         >
                           Cancel
                         </Button>
-                        <Button type="submit">Add Program</Button>
+                        <Button type="submit">
+                          {showEditProgram ? 'Update Program' : 'Add Program'}
+                        </Button>
                       </div>
                     </form>
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {programs.map((program) => (
                     <motion.div
                       key={program.id}
                       whileHover={{ y: -5 }}
-                      className="bg-white rounded-lg shadow p-6 border"
+                      className="bg-white rounded-lg shadow p-4 border hover:shadow-lg transition-shadow"
                     >
-                      <h3 className="text-lg font-bold mb-2">{program.title}</h3>
-                      <p className="text-gray-600 mb-4">{program.description}</p>
-                      <p className="text-gray-600 mb-4">Category: {program.category}</p>
-                      <p className="text-gray-600 mb-4">Website: <a href={program.websiteLink} target="_blank" rel="noopener noreferrer">{program.websiteLink}</a></p>
-                      <div className="flex justify-between items-center">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteProgram(program.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                      {program.imageUrl && (
+                        <img
+                          src={program.imageUrl}
+                          alt={program.title}
+                          className="w-full h-32 object-cover rounded-lg mb-3"
+                          onError={(e) => {
+                            e.currentTarget.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085";
+                          }}
+                        />
+                      )}
+                      <div className="space-y-2">
+                        <h3 className="text-base font-semibold text-gray-900 line-clamp-1">{program.title}</h3>
+                        <p className="text-sm text-gray-600 line-clamp-2">{program.description}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                            {program.category}
+                          </span>
+                          <div className="flex space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => startEditProgram(program)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteProgram(program.id)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <a 
+                            href={program.websiteLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-blue-600 hover:underline truncate max-w-[150px]"
+                          >
+                            {program.websiteLink}
+                          </a>
+                          <span>{new Date(program.createdAt).toLocaleDateString()}</span>
+                        </div>
                       </div>
                     </motion.div>
                   ))}

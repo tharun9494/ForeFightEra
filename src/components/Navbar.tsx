@@ -8,7 +8,11 @@ import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import logo from '../images/3.png'; 
 
-export default function Navbar({ isAdmin }) {
+interface NavbarProps {
+  isAdmin?: boolean;
+}
+
+export default function Navbar({ isAdmin }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [user, setUser] = useState(auth.currentUser);
@@ -26,6 +30,7 @@ export default function Navbar({ isAdmin }) {
 
   const navItems = [
     { name: 'Home', path: '/' },
+    { name: 'Products', path: '/products' },
     { name: 'Projects', path: '/projects' },
     { name: 'Services', path: '/services' },
     { name: 'About Us', path: '/about' },

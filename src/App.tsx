@@ -11,6 +11,7 @@ import BlogDetail from './pages/BlogDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
+import Products from './pages/Products';
 import { useEffect, useState } from 'react';
 import { auth, db } from './lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -44,6 +45,7 @@ function App() {
         <div className="flex-grow pt-16">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
             <Route path="/projects" element={<Programs />} /> 
             <Route path="/projects/:id" element={<CourseDetail />} />
             <Route path="/services" element={<Blogs />} />

@@ -11,7 +11,7 @@ interface Course {
   id: string;
   title: string;
   description: string;
-  image?: string;
+  imageUrl?: string;
   category: string;
   students: number;
   rating: number | string;
@@ -219,7 +219,7 @@ export default function Programs() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="text-4xl font-bold mb-8">Our Projects</h1>
+        <h1 className="text-4xl font-bold mb-8">Completed Projects</h1>
         {courses.length === 0 ? (
           <p className="text-center text-gray-500 py-8">No programs available at the moment.</p>
         ) : (
@@ -232,9 +232,12 @@ export default function Programs() {
               >
                 <div className="relative">
                   <img
-                    src={course.image || "https://images.unsplash.com/photo-1498050108023-c5249f4df085"}
+                    src={course.imageUrl || "https://images.unsplash.com/photo-1498050108023-c5249f4df085"}
                     alt={course.title}
                     className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085";
+                    }}
                   />
                   <div className="absolute top-4 right-4">
                     <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-medium text-indigo-600">
