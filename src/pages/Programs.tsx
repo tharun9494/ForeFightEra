@@ -15,9 +15,9 @@ interface Project {
 }
 
 const testimonials = [
-    { name: "Client A", feedback: "Working with ForeFight Era was a game-changer. Their attention to detail and commitment to quality is unmatched.", rating: 5 },
-    { name: "Client B", feedback: "The team delivered a stunning website that perfectly captured our brand's vision. Highly recommended!", rating: 5 },
-    { name: "Client C", feedback: "Professional, efficient, and incredibly creative. Our new website has received nothing but positive feedback.", rating: 5 },
+    { name: "Ramesh Reddy", feedback: "Working with ForeFight Era was a game-changer. Their attention to detail and commitment to quality is unmatched.", rating: 5 },
+    { name: "Devi Sree Prasad", feedback: "The team delivered a stunning website that perfectly captured our brand's vision. Highly recommended!", rating: 5 },
+    { name: "Poorimma", feedback: "Professional, efficient, and incredibly creative. Our new website has received nothing but positive feedback.", rating: 5 },
 ];
 
 export default function ProjectsPage() {
