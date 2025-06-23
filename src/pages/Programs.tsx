@@ -1,357 +1,201 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Clock, Users, Star, Video, Play } from 'lucide-react';
+import { Tag, ExternalLink, MessageSquare, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebase';
-import toast from 'react-hot-toast';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
-interface Course {
+interface Project {
   id: string;
   title: string;
   description: string;
   imageUrl?: string;
   category: string;
-  students: number;
-  rating: number | string;
+  websiteLink?: string;
 }
 
-interface VideoData {
-  url: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-}
+const testimonials = [
+    { name: "Client A", feedback: "Working with ForeFight Era was a game-changer. Their attention to detail and commitment to quality is unmatched.", rating: 5 },
+    { name: "Client B", feedback: "The team delivered a stunning website that perfectly captured our brand's vision. Highly recommended!", rating: 5 },
+    { name: "Client C", feedback: "Professional, efficient, and incredibly creative. Our new website has received nothing but positive feedback.", rating: 5 },
+];
 
-export default function Programs() {
-  const [courses, setCourses] = useState<Course[]>([]);
+export default function ProjectsPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [categories, setCategories] = useState<string[]>(['All']);
+  const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
-  const [selectedVideo, setSelectedVideo] = useState<VideoData | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchProjects = async () => {
       try {
         setLoading(true);
         const querySnapshot = await getDocs(collection(db, 'programs'));
         
         if (querySnapshot.empty) {
-          console.log('No programs found');
-          setCourses([]);
+          setProjects([]);
           return;
         }
 
-        const enrollmentsSnapshot = await getDocs(collection(db, 'enrollments'));
-        const ratingsSnapshot = await getDocs(collection(db, 'ratings'));
-
-        // Get all enrollments
-        const enrollments = enrollmentsSnapshot.docs.map(doc => doc.data());
-        // Get all ratings
-        const ratings = ratingsSnapshot.docs.map(doc => doc.data());
-
-        const coursesData = querySnapshot.docs.map(doc => {
-          const courseId = doc.id;
-          // Count students enrolled in this course
-          const studentCount = enrollments.filter(e => e.courseId === courseId).length;
-          // Calculate average rating for this course
-          const courseRatings = ratings.filter(r => r.courseId === courseId);
-          const averageRating = courseRatings.length > 0 
-            ? (courseRatings.reduce((acc, curr) => acc + curr.rating, 0) / courseRatings.length).toFixed(1)
-            : 0;
-
-          return {
-            id: courseId,
-            ...doc.data(),
-            students: studentCount,
-            rating: averageRating
-          } as Course;
-        });
+        const projectsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Project[];
         
-        setCourses(coursesData);
-      } catch (error: any) {
-        console.error('Error fetching courses:', error);
-        if (error.code === 'permission-denied') {
-          toast.error('You do not have permission to view courses. Please contact support.');
-        } else {
-          toast.error('Failed to load courses. Please try again later.');
-        }
+        setProjects(projectsData);
+        setFilteredProjects(projectsData);
+
+        // Extract unique categories
+        const uniqueCategories = ['All', ...new Set(projectsData.map(p => p.category))];
+        setCategories(uniqueCategories);
+
+      } catch (error) {
+        console.error('Error fetching projects:', error);
       } finally {
         setLoading(false);
       }
     };
-
-    // Check if user is authenticated before fetching
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        fetchCourses();
-      } else {
-        // If not authenticated, still try to fetch public courses
-    fetchCourses();
-      }
-    });
-
-    // Cleanup subscription
-    return () => unsubscribe();
+    fetchProjects();
   }, []);
-
-  const fetchVideoUrl = async (courseId: string): Promise<string> => {
-    // Implement your video URL fetching logic here
-    return '';
-  };
-
-  const handleEnroll = async (courseId: string) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        toast.error('Please login to enroll in courses');
-        return;
-      }
-
-      // Check if user is already enrolled
-      const enrollmentsRef = collection(db, 'enrollments');
-      const enrollmentQuery = await getDocs(enrollmentsRef);
-      const existingEnrollment = enrollmentQuery.docs.find(
-        doc => doc.data().userId === user.uid && doc.data().courseId === courseId
-      );
-
-      if (existingEnrollment) {
-        toast.error('You are already enrolled in this course');
-        return;
-      }
-
-      await addDoc(collection(db, 'enrollments'), {
-        userId: user.uid,
-        courseId: courseId,
-        enrolledAt: new Date().toISOString(),
-        progress: 0,
-        status: 'active'
-      });
-
-      // Fetch video URL after successful enrollment
-      const videoUrl = await fetchVideoUrl(courseId);
-      setSelectedVideo({
-        url: videoUrl,
-        title: 'Video Title',
-        description: 'Video Description',
-        thumbnail: 'Thumbnail URL'
-      });
-
-      toast.success('Successfully enrolled in the course!');
-      navigate('/profile');
-    } catch (error) {
-      console.error('Error enrolling in course:', error);
-      toast.error('Failed to enroll in course');
+  
+  const handleFilter = (category: string) => {
+    setActiveCategory(category);
+    if (category === 'All') {
+      setFilteredProjects(projects);
+    } else {
+      setFilteredProjects(projects.filter(p => p.category === category));
     }
   };
 
-  const handleRating = async (courseId: string, rating: number) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        toast.error('Please login to rate this course');
-        return;
-      }
-
-      // Check if user has already rated
-      const ratingsRef = collection(db, 'ratings');
-      const ratingQuery = await getDocs(ratingsRef);
-      const existingRating = ratingQuery.docs.find(
-        doc => doc.data().userId === user.uid && doc.data().courseId === courseId
-      );
-
-      if (existingRating) {
-        toast.error('You have already rated this course');
-        return;
-      }
-
-      // Add new rating
-      await addDoc(collection(db, 'ratings'), {
-        userId: user.uid,
-        courseId: courseId,
-        rating: rating,
-        createdAt: new Date().toISOString()
-      });
-
-      toast.success('Thank you for rating!');
-      // Refresh courses to update the rating
-      window.location.reload();
-    } catch (error) {
-      console.error('Error rating course:', error);
-      toast.error('Failed to submit rating');
-    }
+  const item = {
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 100 } }
   };
-
-  const VideoPreviewModal = ({ video, onClose }: { video: VideoData; onClose: () => void }) => (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl max-w-3xl w-full p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">{video.title}</h3>
-          <Button variant="ghost" onClick={onClose}>×</Button>
-        </div>
-        <div className="aspect-video rounded-lg overflow-hidden bg-black mb-4">
-          <video
-            src={video.url}
-            controls
-            className="w-full h-full"
-            poster={video.thumbnail}
-          >
-            Your browser does not support the video tag.
-          </video>
-        </div>
-        <p className="text-gray-600 mb-4">{video.description}</p>
-      </div>
-    </div>
-  );
-
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+    <div className="bg-white">
+      {/* Hero Section */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="pt-32 pb-20 bg-gray-50 text-center"
       >
-        <h1 className="text-4xl font-bold mb-8">Completed Projects</h1>
-        {courses.length === 0 ? (
-          <p className="text-center text-gray-500 py-8">No programs available at the moment.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {courses.map((course) => (
-              <motion.div
-                key={course.id}
-                whileHover={{ y: -5 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.h1
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="text-5xl font-extrabold text-gray-900 mb-4"
+          >
+            Our Work
+          </motion.h1>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="text-xl text-gray-600"
+          >
+            A showcase of our passion, creativity, and commitment to excellence.
+          </motion.p>
+        </div>
+      </motion.section>
+
+      {/* Filter and Projects Grid */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center flex-wrap gap-2 mb-12">
+            {categories.map(category => (
+              <Button
+                key={category}
+                variant={activeCategory === category ? 'default' : 'outline'}
+                onClick={() => handleFilter(category)}
+                className={`rounded-full px-6 ${activeCategory === category ? 'bg-yellow-500 hover:bg-yellow-600' : ''}`}
               >
-                <div className="relative">
+                {category}
+              </Button>
+            ))}
+          </div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+            initial="hidden"
+            animate="show"
+          >
+            {filteredProjects.map((project) => (
+              <motion.div
+                key={project.id}
+                variants={item}
+                layout
+                className="bg-white rounded-2xl shadow-xl overflow-hidden group"
+              >
+                <div className="relative h-56 overflow-hidden">
                   <img
-                    src={course.imageUrl || "https://images.unsplash.com/photo-1498050108023-c5249f4df085"}
-                    alt={course.title}
-                    className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085";
-                    }}
+                    src={project.imageUrl || "https://images.unsplash.com/photo-1498050108023-c5249f4df085"}
+                    alt={project.title}
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
                   />
-                  <div className="absolute top-4 right-4">
-                    <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-medium text-indigo-600">
-                      {course.category}
-                    </span>
-                  </div>
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2">{course.title}</h3>
-                  <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
-                  <div className="flex items-center justify-between">
-                    
-                    <div className="flex space-x-2">
-                      <Link to={`/projects/${course.id}`} state={{ course }}>
-                        <Button variant="outline">
-                          View Details
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <div className="flex items-center text-yellow-500 cursor-pointer">
-                      <Star 
-                        className={`w-4 h-4 mr-1 ${auth.currentUser ? 'cursor-pointer' : ''}`} 
-                        onClick={() => auth.currentUser && handleRating(course.id, 5)}
-                      />
-                      <span className="text-sm">
-                        {typeof course.rating === 'number' && course.rating > 0 ? course.rating : 'No ratings'}
-                      </span>
-                    </div>
-
-                    </div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-2xl font-bold text-gray-900">{project.title}</h3>
+                    <a href={project.websiteLink || '#'} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-yellow-500 transition-colors">
+                      <ExternalLink className="w-6 h-6"/>
+                    </a>
                   </div>
+                  <span className="flex items-center text-sm font-medium text-gray-500 mb-4">
+                    <Tag className="w-4 h-4 mr-2"/> {project.category}
+                  </span>
+                  <p className="text-gray-600 line-clamp-3">{project.description}</p>
                 </div>
               </motion.div>
             ))}
-            {/* Static Program Example
-          
-            <motion.div
-              key="static-course"
-              whileHover={{ y: -5 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden"
-            >
-              <div className="relative">
-                <img
-                  src="https://images.unsplash.com/photo-1498050108023-c5249f4df085"
-                  alt="Static Course Title"
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-medium text-indigo-600">
-                    python
-                  </span>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">Numpy</h3>
-                <p className="text-gray-600 mb-4">NumPy, short for Numerical Python, is a fundamental library for numerical and scientific computing in Python. It provides support for large, multi-dimensional arrays and matrices, along with a collection of high-level mathematical functions to operate on these arrays efficiently.</p>
-                
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center text-gray-500">
-                    <Clock className="w-4 h-4 mr-1" />
-                    <span className="text-sm">3 hours</span>
-                  </div>
-                  <div className="flex items-center text-gray-500">
-                    <Users className="w-4 h-4 mr-1" />
-                    <span className="text-sm">10 students</span>
-                  </div>
-                  <div className="flex items-center text-yellow-500 cursor-pointer">
-                    <Star className="w-4 h-4 mr-1" />
-                    <span className="text-sm">4.5</span>
-                  </div>
-                </div>
+          </motion.div>
+        </div>
+      </section>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-indigo-600">
-                    $10
-                  </span>
-                  <div className="flex space-x-2">
-                    <Link to={`/programs/coursedetails2`} state={{ 
-                      course: {
-                        title: "Numpy",
-                        description: "NumPy, short for Numerical Python...",
-                        category: "python",
-                        duration: "3 hours",
-                        students: 10,
-                        rating: 4.5,
-                        price: 10
-                      }
-                    }}>
-                      <Button variant="outline">
-                        View Details
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                    <Button 
-                      onClick={() => handleEnroll('CourseDetail2')}
-                    >
-                      Enroll Now
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-            */}
+      {/* Testimonials Section */}
+      <section className="bg-gray-50 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-yellow-600 mb-4">What Our Clients Say</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Real feedback from the amazing businesses we've had the pleasure to work with.
+            </p>
           </div>
-        )}
-      </motion.div>
-
-      {/* Video Preview Modal */}
-      {selectedVideo && (
-        <VideoPreviewModal
-          video={selectedVideo}
-          onClose={() => setSelectedVideo(null)}
-        />
-      )}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            variants={{ show: { transition: { staggerChildren: 0.2 } } }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            {testimonials.map((testimonial, index) => (
+              <motion.div key={index} variants={item} className="bg-white p-8 rounded-2xl shadow-lg">
+                <MessageSquare className="w-10 h-10 text-yellow-400 mb-4"/>
+                <p className="text-gray-600 mb-6">"{testimonial.feedback}"</p>
+                <div className="flex items-center justify-between">
+                    <span className="font-bold text-gray-800">- {testimonial.name}</span>
+                    <div className="flex">
+                        {[...Array(testimonial.rating)].map((_, i) => <Star key={i} className="w-5 h-5 text-yellow-400 fill-current"/>)}
+                    </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 }

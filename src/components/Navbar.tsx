@@ -65,12 +65,12 @@ export default function Navbar({ isAdmin }: NavbarProps) {
             {navItems.map((item) => (
               <Link
                 key={item.name}
-                to={item.path === '/projects' || item.path === '/services' || user || item.path === '/' || item.path === '/about' ? item.path : '/login'}
+                to={item.path}
                 className={`${
                   location.pathname === item.path
                     ? 'text-yellow-600'
                     : 'text-gray-600 hover:text-indigo-600'
-                } transition-colors duration-200 ${!(user || item.path === '/' || item.path === '/about' || item.path === '/projects' || item.path === '/services') ? 'pointer-events-none opacity-50' : ''}`}
+                } transition-colors duration-200`}
               >
                 {item.name}
               </Link>
@@ -157,7 +157,7 @@ export default function Navbar({ isAdmin }: NavbarProps) {
             {navItems.map((item) => (
               <Link
                 key={item.name}
-                to={item.path === '/programs' || item.path === '/blogs' || user || item.path === '/' || item.path === '/about' ? item.path : '/login'}
+                to={item.path}
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
                 onClick={() => setIsOpen(false)}
               >
