@@ -173,9 +173,9 @@ export default function Home() {
               transition={{ delay: 1 }}
               className="flex flex-wrap gap-4"
             >
-              <Link to="/projects">
+              <Link to="/products">
                 <Button size="lg" className="bg-white text-indigo-600 hover:bg-white/90">
-                  Explore projects
+                  Explore products
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
