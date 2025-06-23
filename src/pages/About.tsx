@@ -132,11 +132,11 @@ export default function About() {
                 variants={item}
                 className="bg-white rounded-2xl shadow-xl overflow-hidden text-center transform hover:-translate-y-2 transition-transform duration-300"
               >
-                <div className="h-64 sm:h-80 overflow-hidden">
+                <div className="flex justify-center items-center h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden">
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover object-center"
+                    className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-48 lg:h-48 object-cover object-center rounded-full border-4 border-yellow-200 shadow-md transition-all duration-300"
                   />
                 </div>
                 <div className="p-8">

@@ -31,7 +31,6 @@ export default function Navbar({ isAdmin }: NavbarProps) {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/products' },
-    { name: 'Projects', path: '/projects' },
     { name: 'Services', path: '/services' },
     { name: 'About Us', path: '/about' },
   ];
