@@ -28,10 +28,11 @@ export default function Navbar({ isAdmin }: NavbarProps) {
     return () => unsubscribe();
   }, []);
 
-  const navItems = [
+  const navigation = [
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/products' },
     { name: 'Services', path: '/services' },
+    { name: 'Pricing', path: '/pricing' },
     { name: 'About Us', path: '/about' },
   ];
 
@@ -61,7 +62,7 @@ export default function Navbar({ isAdmin }: NavbarProps) {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+            {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
@@ -153,7 +154,7 @@ export default function Navbar({ isAdmin }: NavbarProps) {
           className="md:hidden"
         >
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-            {navItems.map((item) => (
+            {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}

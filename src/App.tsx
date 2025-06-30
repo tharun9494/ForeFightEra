@@ -6,6 +6,11 @@ import Home from './pages/Home';
 import Programs from './pages/Programs';
 import Blogs from './pages/Blogs';
 import About from './pages/About';
+import Contact from './pages/Contact';
+import Pricing from './pages/Pricing';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
+import RefundPolicy from './pages/RefundPolicy';
 import CourseDetail from './pages/CourseDetail';
 import BlogDetail from './pages/BlogDetail';
 import AdminDashboard from './pages/AdminDashboard';
@@ -51,6 +56,11 @@ function App() {
             <Route path="/services" element={<Blogs />} />
             <Route path="/services/:id" element={<BlogDetail />} />
             <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
             <Route path="/profile" element={<Profile />} />
             {isAdmin && <Route path="/admin" element={<AdminDashboard />} />}
             <Route path="*" element={<NotFound />} />
