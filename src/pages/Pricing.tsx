@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 const pricingPlans = [
   {
     name: 'Basic Website',
-    price: '₹4,999',
-    originalPrice: '₹7,999',
+    price: '₹9,999',
+    originalPrice: '₹14,999',
     description: 'Perfect for small businesses and startups',
     features: [
       'Responsive Design',
@@ -25,8 +25,8 @@ const pricingPlans = [
   },
   {
     name: 'Professional Website',
-    price: '₹9,999',
-    originalPrice: '₹14,999',
+    price: '₹19,999',
+    originalPrice: '₹24,999',
     description: 'Ideal for growing businesses',
     features: [
       'Everything in Basic',
@@ -46,8 +46,8 @@ const pricingPlans = [
   },
   {
     name: 'E-Commerce Website',
-    price: '₹19,999',
-    originalPrice: '₹29,999',
+    price: '₹25,000+',
+    originalPrice: '₹35,000',
     description: 'Complete online store solution',
     features: [
       'Everything in Professional',
