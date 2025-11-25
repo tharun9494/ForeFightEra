@@ -15,7 +15,6 @@ export default function Contact() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission - you can integrate with your backend here
-    console.log('Form submitted:', formData);
     // Reset form
     setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
   };

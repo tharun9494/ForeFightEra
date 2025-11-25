@@ -6,9 +6,6 @@ import { Link } from 'react-router-dom';
 import { collection, query, limit, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getAuth } from 'firebase/auth';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import SkyBackground from '@/components/SkyBackground';
 import background from '../../src/images/background.mp4'
 
 interface Course {

@@ -1,11 +1,6 @@
-import { useEffect, useRef } from 'react';
-
 export default function SkyBackground() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   return (
     <div 
-      ref={containerRef} 
       className="fixed inset-0 -z-10 overflow-hidden bg-gradient-to-b from-[#1a1a2e] to-[#16213e]"
     >
       {/* Sun */}

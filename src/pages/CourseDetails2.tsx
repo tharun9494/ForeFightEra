@@ -58,7 +58,7 @@ export default function CourseDetails2() {
           { id: '1', title: 'Class 1 - TUPLE', path: 'Content/class13.docx' },
           { id: '2', title: 'Class 2 - Lists', path: 'Content/class4.docx' },
           { id: '3', title: 'Class 3 - Dictionaries', path: 'Content/class7.docx' },
-          { id: '3', title: 'Class 4 - basic', path: 'Conten/class8.docx' },
+          { id: '4', title: 'Class 4 - basic', path: 'Content/class8.docx' },
           
 
           // Add more documents as needed
