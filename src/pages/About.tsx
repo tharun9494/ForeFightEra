@@ -1,21 +1,17 @@
 import { motion } from 'framer-motion';
 import { Users, Award, Zap, Target, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Tharun from '../images/Tharun.jpeg';
-import Prem from '../images/Prem.png';
 import { Link } from 'react-router-dom';
 
 const team = [
   {
     name: 'Ontimitta Tharun',
     role: 'Founder & CEO',
-    image: Tharun,
     bio: 'Visionary leader with a passion for innovation and a drive to empower businesses through technology.'
   },
   {
     name: 'Kothala Prem Sai',
     role: 'Co-Founder & CTO',
-    image: Prem,
     bio: 'Technology expert dedicated to building robust, scalable, and cutting-edge digital solutions.'
   }
 ];
@@ -132,13 +128,6 @@ export default function About() {
                 variants={item}
                 className="bg-white rounded-2xl shadow-xl overflow-hidden text-center transform hover:-translate-y-2 transition-transform duration-300"
               >
-                <div className="flex justify-center items-center h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-48 lg:h-48 object-cover object-center rounded-full border-4 border-yellow-200 shadow-md transition-all duration-300"
-                  />
-                </div>
                 <div className="p-8">
                   <h3 className="text-2xl font-bold mb-1 text-gray-900">{member.name}</h3>
                   <p className="text-indigo-500 font-semibold mb-3">{member.role}</p>
